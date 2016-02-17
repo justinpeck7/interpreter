@@ -113,7 +113,10 @@ public class Expression {
                 }
                 else if (this.middle.toString().equals("/")) {
                     return new IntegerValue(i1 / i2);
-                }                
+                }
+                else if (this.middle.toString().equals("%")) {
+                	return new IntegerValue(i1 % i2);
+                }
             }
             else {
                 throw new Exception("RUNTIME ERROR: illegal operands for " + this.middle);

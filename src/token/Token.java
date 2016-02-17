@@ -11,7 +11,7 @@ public class Token {
     private String strVal;
 
     public String[] keywords = { "=", "(", ")", "output", "quit", "repeat", "end" };
-    public String[] operators = { "+", "-", "*", "/", ".", "==", "=/=", ">", ">=", "<", "<=" };    
+    public String[] operators = { "+", "-", "*", "/", ".", "==", "=/=", ">", ">=", "<", "<=", "%" };    
     public static enum Type { KEYWORD, OPERATOR, IDENTIFIER, INTEGER, STRING, UNKNOWN }
     
     /**
