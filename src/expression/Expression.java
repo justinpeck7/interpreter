@@ -1,6 +1,7 @@
 package expression;
 
 import interpreter.Interpreter;
+import datavalue.BooleanValue;
 import datavalue.DataValue;
 import datavalue.IntegerValue;
 import datavalue.StringValue;
@@ -25,6 +26,7 @@ public class Expression {
         Token token1 = input.next();
         if (token1.toString().equals("(")) {
             if (input.lookAhead().toString().equals("-")) {
+            	System.out.println("got here");
                 this.lhs = null;
             }
             else {
@@ -45,7 +47,9 @@ public class Expression {
             
             if (this.middle.getType() != Token.Type.INTEGER && 
             	this.middle.getType() != Token.Type.STRING &&
-            	this.middle.getType() != Token.Type.IDENTIFIER){
+            	this.middle.getType() != Token.Type.IDENTIFIER &&
+            	this.middle.getType() != Token.Type.BOOLEAN
+            	){
                 throw new Exception("SYNTAX ERROR: Malformed expression");	
             }
         }
@@ -117,6 +121,38 @@ public class Expression {
                 else if (this.middle.toString().equals("%")) {
                 	return new IntegerValue(i1 % i2);
                 }
+                else if (this.middle.toString().equals("==")) {
+                	return new BooleanValue(i1 == i2);
+                }
+                else if (this.middle.toString().equals("=/=")) {
+                	return new BooleanValue(i1 != i2);
+                }
+                else if (this.middle.toString().equals(">")) {
+                	return new BooleanValue(i1 > i2);
+                }
+                else if (this.middle.toString().equals("<")) {
+                	return new BooleanValue(i1 < i2);
+                }
+                else if (this.middle.toString().equals(">=")) {
+                	return new BooleanValue(i1 >= i2);
+                }
+                else if (this.middle.toString().equals("<=")) {
+                	return new BooleanValue(i1 <= i2);
+                }
+            }
+            else if (lhsValue.getType() == Token.Type.STRING && 
+            		rhsValue.getType() == Token.Type.STRING &&
+            		!this.middle.toString().equals(".")) {
+
+            	String s1 = (String) lhsValue.getValue().toString();
+            	String s2 = (String) rhsValue.getValue().toString();
+            	
+            	if(this.middle.toString().equals("==")) {
+            		return new BooleanValue(s1.equals(s2));
+            	}
+            	if(this.middle.toString().equals("=/=")) {
+            		return new BooleanValue(!s1.equals(s2));
+            	}
             }
             else {
                 throw new Exception("RUNTIME ERROR: illegal operands for " + this.middle);

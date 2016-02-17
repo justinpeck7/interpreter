@@ -11,8 +11,10 @@ public class Token {
     private String strVal;
 
     public String[] keywords = { "=", "(", ")", "output", "quit", "repeat", "end" };
-    public String[] operators = { "+", "-", "*", "/", ".", "==", "=/=", ">", ">=", "<", "<=", "%" };    
-    public static enum Type { KEYWORD, OPERATOR, IDENTIFIER, INTEGER, STRING, UNKNOWN }
+    public String[] operators = { "+", "-", "*", "/", ".", "==", "=/=", ">", ">=", "<", "<=", "%", "and", "or", "not" };
+    public String[] booleans = { "true", "false" };
+    
+    public static enum Type { KEYWORD, OPERATOR, IDENTIFIER, INTEGER, STRING, UNKNOWN, BOOLEAN }
     
     /**
      * Constructs a token out of the given string.
@@ -32,6 +34,9 @@ public class Token {
         }
         else if (Arrays.asList(this.operators).contains(this.strVal)) {
             return Token.Type.OPERATOR;
+        }
+        else if(Arrays.asList(this.booleans).contains(this.strVal)) {
+        	return Token.Type.BOOLEAN;
         }
         else if (Character.isDigit(this.strVal.charAt(0)) || this.strVal.charAt(0) == '-') {
             for (int i = 1; i < this.strVal.length(); i++) {
