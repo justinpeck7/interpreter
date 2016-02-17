@@ -7,6 +7,7 @@ import datavalue.IntegerValue;
 import datavalue.StringValue;
 import token.Token;
 import token.TokenStream;
+import token.Token.Type;
 
 /**
  * Derived class that represents an expression in the SILLY language.
@@ -26,7 +27,6 @@ public class Expression {
         Token token1 = input.next();
         if (token1.toString().equals("(")) {
             if (input.lookAhead().toString().equals("-")) {
-            	System.out.println("got here");
                 this.lhs = null;
             }
             else {
@@ -67,6 +67,9 @@ public class Expression {
         }
         else if (t.getType() == Token.Type.STRING) {
             return new StringValue(t.toString());
+        }
+        else if (t.getType() == Token.Type.BOOLEAN) {
+        	return new BooleanValue(Boolean.parseBoolean(t.toString()));
         }
         else {
         	throw new Exception("RUNTIME ERROR: Invalid data type");
@@ -144,8 +147,8 @@ public class Expression {
             		rhsValue.getType() == Token.Type.STRING &&
             		!this.middle.toString().equals(".")) {
 
-            	String s1 = (String) lhsValue.getValue().toString();
-            	String s2 = (String) rhsValue.getValue().toString();
+            	String s1 = (String) lhsValue.getValue();
+            	String s2 = (String) rhsValue.getValue();
             	
             	if(this.middle.toString().equals("==")) {
             		return new BooleanValue(s1.equals(s2));
@@ -153,6 +156,18 @@ public class Expression {
             	if(this.middle.toString().equals("=/=")) {
             		return new BooleanValue(!s1.equals(s2));
             	}
+            }
+            else if (lhsValue.getType() == Token.Type.BOOLEAN &&
+            		rhsValue.getType() == Token.Type.BOOLEAN) {
+            	boolean b1 = (boolean) lhsValue.getValue();
+            	boolean b2 = (boolean) rhsValue.getValue();
+            	
+            	if (this.middle.toString().equals("and")) {       	
+            		return new BooleanValue(b1 && b2);
+            	}
+            	else if (this.middle.toString().equals("or")) {
+            		return new BooleanValue(b1 || b2);
+            	}            	
             }
             else {
                 throw new Exception("RUNTIME ERROR: illegal operands for " + this.middle);
