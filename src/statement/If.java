@@ -36,7 +36,7 @@ public class If extends Statement {
 
 				if (input.lookAhead().toString().equals("elif")) {
 					input.next();
-					getNextCondition(input);
+					this.getNextCondition(input);
 					if (conditionIsTrue()) {
 						this.conditionMet = true;
 						this.getStatementsForIf(input);
@@ -62,7 +62,6 @@ public class If extends Statement {
 		while (!input.lookAhead().toString().equals("end")) {
 			input.next();
 		}
-//		input.next();
 	}
 
 	private boolean conditionIsTrue() {
