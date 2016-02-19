@@ -37,8 +37,7 @@ public class While extends Statement {
 	}
 
     /**
-     * Executes the current while statement so long as
-     * the condition evaluates to true.
+     * Executes the current while statement
      */
 	public void execute() throws Exception {
 		DataValue flag = this.condition.evaluate();

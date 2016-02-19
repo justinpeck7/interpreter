@@ -7,12 +7,21 @@ import expression.Expression;
 import token.Token;
 import token.TokenStream;
 
+/**
+ * Derived class that represents an if statement in the SILLY language.
+ *   @author Justin Peck
+ *   @version 2/19/16
+ */
 public class If extends Statement {
 	private ArrayList<Statement> stmts;
 	private ArrayList<String> allLines;
 	private Object condition;
 	private boolean conditionMet = false;
-
+	
+    /**
+     * Reads in an if statement from the specified stream
+     *   @param input the stream to be read from
+     */
 	public If(TokenStream input) throws Exception {
 		Token keyword = input.next();
 		this.allLines = new ArrayList<String>();
@@ -38,8 +47,7 @@ public class If extends Statement {
 				}
 
 				if (input.lookAhead().toString().equals("elif")) {
-					this.updateAllLines(input);
-					input.next();
+					this.updateTotalLines(input);
 					this.getNextCondition(input);
 					if (conditionIsTrue()) {
 						this.conditionMet = true;
@@ -47,8 +55,7 @@ public class If extends Statement {
 						this.continueToEnd(input);
 					}
 				} else if (input.lookAhead().toString().equals("else")) {
-					this.updateAllLines(input);
-					input.next();					
+					this.updateTotalLines(input);
 					this.conditionMet = true;
 					this.getStatementsForIf(input);
 					if (!input.lookAhead().toString().equals("end")) {
@@ -63,10 +70,19 @@ public class If extends Statement {
 		input.next();
 	}
 
-	private void updateAllLines(TokenStream input) {
-		this.allLines.add(input.lookAhead().toString());		
+    /**
+     * Adds current line to the array of all lines
+     *   @param input the stream to read
+     */
+	private void updateTotalLines(TokenStream input) {
+		this.allLines.add(input.next().toString());		
 	}
 
+	 /**
+     * Continues to iterate through lines until 'end' is reached.
+     * Adds each line to array of all lines
+     *   @param input the stream to read
+     */
 	private void continueToEnd(TokenStream input) throws Exception {
 		while (!input.lookAhead().toString().equals("end")) {
 			if(input.lookAhead().toString().equals("elif")) {
@@ -82,17 +98,30 @@ public class If extends Statement {
 		}
 	}
 
+	 /**
+     * Checks if current condition evaluates to true
+     */
 	private boolean conditionIsTrue() {
 		return this.condition instanceof BooleanValue
 				&& ((BooleanValue) condition).value == true;
 	}
 
+	 /**
+     * Gets condition following if/elif statements.
+     * Adds condition to array of all lines
+     *   @param input the stream to read
+     */
 	private void getNextCondition(TokenStream input) throws Exception {
 		Expression check = new Expression(input);
 		this.allLines.add(check.toString());
 		this.condition = check.evaluate();
 	}
 
+	 /**
+     * Gets all statements for the current if/elif/else block.
+     * Add each statement to array of all lines
+     *   @param input the stream to read
+     */
 	private void getStatementsForIf(TokenStream input) throws Exception {
 		this.stmts = new ArrayList<Statement>();
 		while (!input.lookAhead().toString().equals("end")
@@ -104,12 +133,19 @@ public class If extends Statement {
 		}
 	}
 
+	 /**
+     * Executes the if statement
+     */
 	public void execute() throws Exception {
 		for (Statement stmt : this.stmts) {
 			stmt.execute();
 		}
 	}
 
+    /**
+     * Converts the current if statement into a String.
+     *   @return the String representation of this statement
+     */
 	public String toString() {
 		String str = "if ";
 		for (String line : allLines) {
