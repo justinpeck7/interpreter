@@ -42,7 +42,7 @@ public class BooleanValue implements DataValue {
     /**
      * Comparison method for BooleanValues.
      *   @param other value being compared with
-     *   @return 1 if equal, 0 if not
+     *   @return 1 if equal, -1 if not
      */
     public int compareTo(DataValue other) {
     	if(this.value == ((BooleanValue) other).value) {
