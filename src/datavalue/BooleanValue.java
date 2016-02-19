@@ -45,6 +45,11 @@ public class BooleanValue implements DataValue {
      *   @return 1 if equal, 0 if not
      */
     public int compareTo(DataValue other) {
-        return this.value == ((BooleanValue) other).value ? 1 : 0;
+    	if(this.value == ((BooleanValue) other).value) {
+    		return 1;
+    	}
+    	else {
+    		return -1;
+    	}
     }
 }
