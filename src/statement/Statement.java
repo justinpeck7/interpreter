@@ -29,6 +29,9 @@ public abstract class Statement {
         else if (first.toString().equals("repeat")) {
             return new Repeat(input);
         }
+        else if (first.toString().equals("while")) {
+        	return new While(input);
+        }
         else if (first.toString().equals("if")) {
         	return new If(input);
         }

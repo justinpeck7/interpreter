@@ -34,7 +34,8 @@ public class Expression {
 				this.lhs = new Expression(input);
 			}
 			this.middle = input.next();
-			this.rhs = new Expression(input);
+			this.rhs = new Expression(input);	
+			
 			input.next();
 
 			if (this.middle.getType() != Token.Type.OPERATOR) {

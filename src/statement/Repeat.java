@@ -22,7 +22,7 @@ public class Repeat extends Statement {
     public Repeat(TokenStream input) throws Exception {
         Token keyword = input.next();
         if (!keyword.toString().equals("repeat")) {
-            throw new Exception("SYNTAX ERROR: Malformed while statement");
+            throw new Exception("SYNTAX ERROR: Malformed repeat statement");
         }
 
         this.expr = new Expression(input);

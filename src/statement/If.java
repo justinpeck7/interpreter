@@ -14,12 +14,12 @@ public class If extends Statement {
 
 	public If(TokenStream input) throws Exception {
 		Token keyword = input.next();
-		this.getNextCondition(input);
 
 		if (!keyword.toString().equals("if")) {
 			throw new Exception("SYNTAX ERROR: Malformed if statement");
 		}
-
+		
+		this.getNextCondition(input);
 		this.stmts = new ArrayList<Statement>();
 
 		if (conditionIsTrue()) {
@@ -69,18 +69,8 @@ public class If extends Statement {
 				&& ((BooleanValue) condition).value == true;
 	}
 
-	private void getNextCondition(TokenStream input) throws Exception {
-		if (input.lookAhead().toString().equals("(")) {
-			input.next();
-			this.condition = new Expression(input).evaluate();
-			if (input.lookAhead().toString().equals(")")) {
-				input.next();
-			} else {
-				throw new Exception("SYNTAX ERROR: Malformed if statement");
-			}
-		} else {
-			throw new Exception("SYNTAX ERROR: Malformed if statement");
-		}
+	private void getNextCondition(TokenStream input) throws Exception {		
+		this.condition = new Expression(input).evaluate();
 	}
 
 	private void getStatementsForIf(TokenStream input) throws Exception {
