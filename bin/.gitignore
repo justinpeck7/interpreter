@@ -1,6 +1,6 @@
-/datavalue/
-/expression/
-/interpreter/
-/memory/
-/statement/
-/token/
+/datavalue
+/expression
+/interpreter
+/memory
+/statement
+/token
