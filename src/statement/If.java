@@ -25,6 +25,7 @@ public class If extends Statement {
 		if (conditionIsTrue()) {
 			this.conditionMet = true;
 			this.getStatementsForIf(input);
+			this.continueToEnd(input);
 		} else {
 			while (!this.conditionMet) {
 				while (!input.lookAhead().toString().equals("elif")
@@ -39,6 +40,7 @@ public class If extends Statement {
 					if (conditionIsTrue()) {
 						this.conditionMet = true;
 						this.getStatementsForIf(input);
+						this.continueToEnd(input);
 					}
 				} else if (input.lookAhead().toString().equals("else")) {
 					input.next();
@@ -54,6 +56,13 @@ public class If extends Statement {
 			}
 		}
 		input.next();
+	}
+
+	private void continueToEnd(TokenStream input) {
+		while (!input.lookAhead().toString().equals("end")) {
+			input.next();
+		}
+//		input.next();
 	}
 
 	private boolean conditionIsTrue() {
