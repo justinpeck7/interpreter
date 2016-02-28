@@ -1,5 +1,7 @@
 package statement;
 
+import interpreter.Interpreter;
+
 import java.util.ArrayList;
 
 import expression.Expression;
@@ -38,6 +40,7 @@ public class Repeat extends Statement {
      * Executes the current repeat statement.
      */
     public void execute() throws Exception {
+		Interpreter.MEMORY.createNewScope();
         Object val = this.expr.evaluate().getValue();
         if (val instanceof Integer) {
             int numReps = ((Integer) val).intValue();
@@ -46,7 +49,9 @@ public class Repeat extends Statement {
                     stmt.execute();
                 }
             }
+            Interpreter.MEMORY.destroyScope();
         } else {
+        	Interpreter.MEMORY.destroyScope();
             throw new Exception("RUNTIME ERROR: Repeat expression must be an integer");
         }
     }

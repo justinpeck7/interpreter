@@ -1,5 +1,7 @@
 package statement;
 
+import interpreter.Interpreter;
+
 import java.util.ArrayList;
 
 import datavalue.BooleanValue;
@@ -40,14 +42,20 @@ public class While extends Statement {
      * Executes the current while statement
      */
 	public void execute() throws Exception {
+		Interpreter.MEMORY.createNewScope();
 		DataValue flag = this.condition.evaluate();
-		while (flag instanceof BooleanValue
-				&& ((BooleanValue) flag).value == true) {
-			for (Statement stmt : stmts) {
-				stmt.execute();
-			}
-			flag = this.condition.evaluate();
+		if(!(flag instanceof BooleanValue)) {
+			throw new Exception("While expression must be a boolean");
 		}
+		else {
+			while (((BooleanValue) flag).value == true) {
+				for (Statement stmt : stmts) {
+					stmt.execute();
+				}
+				flag = this.condition.evaluate();
+			}
+		}
+		Interpreter.MEMORY.destroyScope();
 	}
 
     /**

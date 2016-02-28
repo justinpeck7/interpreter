@@ -1,23 +1,54 @@
 package memory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import datavalue.DataValue;
 import token.Token;
 
 /**
  * Class that defines the memory space for the SILLY interpreter. 
- *   @author Dave Reed 
+ *   @author Dave Reed, edited by Justin Peck
  *   @version 2/8/16
  */
 public class MemorySpace {
     private StackSegment stack;
     private HeapSegment heap;
+    private List<StackSegment> scopes;
+    private int scopeIndex;
     
     /**
      * Constructs an empty memory space.
      */
     public MemorySpace() {
-    	this.stack = new StackSegment();
     	this.heap = new HeapSegment();
+    	this.scopes = new ArrayList<StackSegment>();
+    	this.scopes.add(new StackSegment());
+    	this.stack = this.scopes.get(0);
+    	this.scopeIndex = 0;
+    }
+    
+    /**
+     * Creates a new scope.   
+     */
+    public void createNewScope() {
+    	this.scopes.add(new StackSegment());
+    	this.scopeIndex ++;
+    	this.stack = this.scopes.get(this.scopeIndex);
+    }
+    
+    /**
+     * Destroys the current scope.   
+     */
+    public void destroyScope() throws Exception {
+    	if (this.scopeIndex > 0) {
+    		this.scopes.remove(scopeIndex);
+        	this.scopeIndex --;
+        	this.stack = this.scopes.get(this.scopeIndex);	
+    	}
+    	else {
+    		throw new Exception("Cannot destroy the global scope");
+    	}
     }
     
     /**
@@ -30,12 +61,24 @@ public class MemorySpace {
     }
 
     /**
-     * Retrieves the value for a variable (from the stack segment).
+     * Retrieves the value for a variable (from the current scope).
+     * Searches all parent scopes until variable is found, else throws an Exception
      *   @param token the variable name
      *   @return the value stored under that name
      */
     public DataValue lookupVariable(Token token) throws Exception {
     	DataValue val = this.stack.lookup(token);
+    	int searchIndex = this.scopeIndex -1;
+    	while (val == null) {
+    		if(searchIndex < 0) {
+    			break;
+    		}
+    		else {
+    			StackSegment currentStack = scopes.get(searchIndex);
+    			val = currentStack.lookup(token);
+    			searchIndex --;
+    		}    		    		
+    	}
         if (val == null) {
             throw new Exception("Undefined variable: " + token.toString());
         }

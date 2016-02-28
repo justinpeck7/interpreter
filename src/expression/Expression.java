@@ -10,7 +10,8 @@ import token.TokenStream;
 
 /**
  * Derived class that represents an expression in the SILLY language.
- *   @author Dave Reed
+ * 
+ * @author Dave Reed, edited by Justin Peck
  * @version 2/8/16
  */
 public class Expression {
@@ -27,15 +28,15 @@ public class Expression {
 	public Expression(TokenStream input) throws Exception {
 		Token token1 = input.next();
 		if (token1.toString().equals("(")) {
-			if (input.lookAhead().toString().equals("-") ||
-					input.lookAhead().toString().equals("not")) {
+			if (input.lookAhead().toString().equals("-")
+					|| input.lookAhead().toString().equals("not")) {
 				this.lhs = null;
 			} else {
 				this.lhs = new Expression(input);
 			}
 			this.middle = input.next();
-			this.rhs = new Expression(input);	
-			
+			this.rhs = new Expression(input);
+
 			input.next();
 
 			if (this.middle.getType() != Token.Type.OPERATOR) {
@@ -151,14 +152,13 @@ public class Expression {
 				} else if (this.middle.toString().equals("or")) {
 					return new BooleanValue(b1 || b2);
 				}
-			}
-			else if (this.lhs == null && rhsValue.getType() == Token.Type.BOOLEAN) {
+			} else if (this.lhs == null
+					&& rhsValue.getType() == Token.Type.BOOLEAN) {
 				boolean b = (boolean) rhsValue.getValue();
-				if(this.middle.toString().equals("not")) {
+				if (this.middle.toString().equals("not")) {
 					return new BooleanValue(!b);
 				}
-			}
-			else {
+			} else {
 				throw new Exception("RUNTIME ERROR: illegal operands for "
 						+ this.middle);
 			}

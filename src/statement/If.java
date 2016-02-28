@@ -1,5 +1,7 @@
 package statement;
 
+import interpreter.Interpreter;
+
 import java.util.ArrayList;
 
 import datavalue.BooleanValue;
@@ -137,9 +139,11 @@ public class If extends Statement {
      * Executes the if statement
      */
 	public void execute() throws Exception {
+		Interpreter.MEMORY.createNewScope();
 		for (Statement stmt : this.stmts) {
 			stmt.execute();
 		}
+		Interpreter.MEMORY.destroyScope();
 	}
 
     /**
