@@ -60,6 +60,12 @@ public class MemorySpace {
     	this.stack.store(token,  val);
     }
     
+    /**
+     * Stores a new variable/value in the stack segment.
+     * If variable already exists, throws an exception.
+     *   @param token the variable name
+     *   @param val the value to be stored under that name
+     */
     public void storeNewVariable(Token token, DataValue val) throws Exception {
     	if (this.stack.lookup(token) == null) {
     		this.stack.store(token,  val);	
