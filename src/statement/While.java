@@ -13,7 +13,7 @@ import token.TokenStream;
 /**
  * Derived class that represents a while statement in the SILLY language.
  *   @author Justin Peck
- *   @version 2/19/16
+ *   @version 2/28/16
  */
 public class While extends Statement {
 	private Expression condition;
@@ -45,6 +45,7 @@ public class While extends Statement {
 		Interpreter.MEMORY.createNewScope();
 		DataValue flag = this.condition.evaluate();
 		if(!(flag instanceof BooleanValue)) {
+			Interpreter.MEMORY.destroyScope();
 			throw new Exception("While expression must be a boolean");
 		}
 		else {
@@ -54,8 +55,8 @@ public class While extends Statement {
 				}
 				flag = this.condition.evaluate();
 			}
+			Interpreter.MEMORY.destroyScope();
 		}
-		Interpreter.MEMORY.destroyScope();
 	}
 
     /**

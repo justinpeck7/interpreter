@@ -10,8 +10,8 @@ import token.TokenStream;
 
 /**
  * Derived class that represents a repeat statement in the SILLY language.
- *   @author Dave Reed
- *   @version 2/8/16
+ *   @author Dave Reed, edited by Justin Peck
+ *   @version 2/28/16
  */
 public class Repeat extends Statement {
     private Expression expr;

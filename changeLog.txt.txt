@@ -1,0 +1,17 @@
+    AUTHOR           Justin Peck
+    
+    CREATED          DESCRIPTION
+    --------------   -----------------------------------------------------------
+    VarDeclaration   new class that implements the declaration of one or more 
+                     local variables in the current scope 
+
+
+    MODIFIED         DESCRIPTION
+    --------------   -----------------------------------------------------------
+    Statement        added a case to getStatement to recognize a VarDeclaration
+    Token            added "var" to the list of keywords
+    MemorySpace      added logic to handle scopes
+    If               added calls to create a new scope before statement execution and destroy it after
+    Repeat           added calls to create a new scope before statement execution and destroy it after
+    While            added calls to create a new scope before statement execution and destroy it after
+                     added check to make sure condition expression evaluates to a boolean

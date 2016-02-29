@@ -4,13 +4,13 @@ import java.util.Arrays;
 
 /**
  * Class that represents a token in the SILLY language.
- *   @author Dave Reed
+ *   @author Dave Reed, edited by Justin Peck
  *   @version 2/8/16
  */
 public class Token {
     private String strVal;
 
-    public String[] keywords = { "=", "(", ")", "output", "quit", "repeat", "end", "if" };
+    public String[] keywords = { "=", "(", ")", "output", "quit", "repeat", "end", "if", "var" };
     public String[] operators = { "+", "-", "*", "/", ".", "==", "=/=", ">", ">=", "<", "<=", "%", "and", "or", "not" };
     public String[] booleans = { "true", "false" };
     

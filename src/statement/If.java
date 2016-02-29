@@ -12,7 +12,7 @@ import token.TokenStream;
 /**
  * Derived class that represents an if statement in the SILLY language.
  *   @author Justin Peck
- *   @version 2/19/16
+ *   @version 2/28/16
  */
 public class If extends Statement {
 	private ArrayList<Statement> stmts;
