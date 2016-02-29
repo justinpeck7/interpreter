@@ -59,6 +59,15 @@ public class MemorySpace {
     public void storeVariable(Token token, DataValue val) {
     	this.stack.store(token,  val);
     }
+    
+    public void storeNewVariable(Token token, DataValue val) throws Exception {
+    	if (this.stack.lookup(token) == null) {
+    		this.stack.store(token,  val);	
+    	}
+    	else {
+    		throw new Exception("Variable " + token.toString() + " already declared");
+    	}
+    }
 
     /**
      * Retrieves the value for a variable (from the current scope).

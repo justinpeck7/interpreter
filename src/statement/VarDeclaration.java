@@ -46,7 +46,7 @@ public class VarDeclaration extends Statement {
      */
 	public void execute() throws Exception {
 		for (Token var : variables) {
-			Interpreter.MEMORY.storeVariable(var, new StringValue("null"));
+			Interpreter.MEMORY.storeNewVariable(var, new StringValue("null"));
 		}		
 	}
 
