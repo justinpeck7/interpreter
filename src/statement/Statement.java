@@ -38,6 +38,12 @@ public abstract class Statement {
         else if (first.toString().equals("var")) {
         	return new VarDeclaration(input);
         }
+        else if (first.toString().equals("sub")) {
+        	return new SubDeclaration(input);
+        }
+        else if (first.toString().equals("call")) {
+        	return new SubCall(input);
+        }
         else if (first.getType() == Token.Type.IDENTIFIER) {
             return new Assignment(input);
         }

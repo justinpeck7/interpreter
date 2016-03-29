@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class Token {
     private String strVal;
 
-    public String[] keywords = { "=", "(", ")", "output", "quit", "repeat", "end", "if", "var" };
+    public String[] keywords = { "=", "(", ")", "output", "quit", "repeat", "end", "if", "var", "sub", "call" };
     public String[] operators = { "+", "-", "*", "/", ".", "==", "=/=", ">", ">=", "<", "<=", "%", "and", "or", "not" };
     public String[] booleans = { "true", "false" };
     

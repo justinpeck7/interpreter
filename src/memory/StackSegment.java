@@ -27,7 +27,7 @@ public class StackSegment {
      *   @param val the data value
      */
     public void store(Token variable, DataValue val) {
-    	this.varTable.put(variable,  val); 	
+    	this.varTable.put(variable,  val);
     }
     
     /**

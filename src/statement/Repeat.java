@@ -40,16 +40,16 @@ public class Repeat extends Statement {
      * Executes the current repeat statement.
      */
     public void execute() throws Exception {
-		Interpreter.MEMORY.createNewScope();
         Object val = this.expr.evaluate().getValue();
         if (val instanceof Integer) {
             int numReps = ((Integer) val).intValue();
             for (int i = 0; i < numReps; i++) {
+            	Interpreter.MEMORY.createNewScope();
                 for (Statement stmt : this.stmts) {
                     stmt.execute();
                 }
+                Interpreter.MEMORY.destroyScope();
             }
-            Interpreter.MEMORY.destroyScope();
         } else {
         	Interpreter.MEMORY.destroyScope();
             throw new Exception("RUNTIME ERROR: Repeat expression must be an integer");

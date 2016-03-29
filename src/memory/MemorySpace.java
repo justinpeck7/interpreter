@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import datavalue.DataValue;
+import statement.Statement;
 import token.Token;
 
 /**
@@ -14,6 +15,7 @@ import token.Token;
 public class MemorySpace {
     private StackSegment stack;
     private HeapSegment heap;
+    private CodeSegment code;
     private List<StackSegment> scopes;
     private int scopeIndex;
     
@@ -22,6 +24,7 @@ public class MemorySpace {
      */
     public MemorySpace() {
     	this.heap = new HeapSegment();
+    	this.code = new CodeSegment();
     	this.scopes = new ArrayList<StackSegment>();
     	this.scopes.add(new StackSegment());
     	this.stack = this.scopes.get(0);
@@ -57,7 +60,30 @@ public class MemorySpace {
      *   @param val the value to be stored under that name
      */
     public void storeVariable(Token token, DataValue val) {
-    	this.stack.store(token,  val);
+    	int index = this.getStackIndexForVar(token);
+    	if (index != -1) {
+    		StackSegment currentStack = scopes.get(index);
+    		currentStack.store(token, val);
+    	}
+    	else {
+    		this.stack.store(token,  val);	
+    	}    	
+    }
+    
+    public int getStackIndexForVar(Token token) {
+    	int index = scopeIndex;
+    	if(this.stack.lookup(token) != null) {
+    		return index;
+    	} else {
+    		while (index > 1) {
+    			index --;
+        		StackSegment currentStack = this.scopes.get(index);
+        		if(currentStack.lookup(token) != null) {
+        			return index;
+        		}
+    		}    		
+    	}
+    	return -1;
     }
     
     /**
@@ -68,7 +94,7 @@ public class MemorySpace {
      */
     public void storeNewVariable(Token token, DataValue val) throws Exception {
     	if (this.stack.lookup(token) == null) {
-    		this.stack.store(token,  val);	
+    		this.stack.store(token,  val);
     	}
     	else {
     		throw new Exception("Variable " + token.toString() + " already declared");
@@ -117,4 +143,16 @@ public class MemorySpace {
     public Object lookupDynamic(int n) {
     	return this.heap.lookup(n);
     }
+    
+    public void storeNewSubroutine(Token name, List<Statement> statements, List<Token> parameters) {
+    	code.storeSubroutine(name, statements, parameters);
+    }
+    
+	public List<Statement> getStmtsForSub(Token name) {
+		return this.code.getStmtsForSub(name);
+	}
+	
+	public List<Token> getParamsForSub(Token name) {
+		return this.code.getParamsForSub(name);
+	}
 }
