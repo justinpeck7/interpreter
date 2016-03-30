@@ -8,11 +8,20 @@ import java.util.List;
 import token.Token;
 import token.TokenStream;
 
+/**
+ * Derived class that represents a subroutine declaration statement in the SILLY language.
+ *   @author Justin Peck
+ *   @version 3/29/16
+ */
 public class SubDeclaration extends Statement {
 	private List<Statement> stmts;
 	private List<Token> params;
 	private Token name;
 	
+    /**
+     * Reads in a SubDeclaration statement from the specified stream
+     *   @param input the stream to be read from
+     */
 	public SubDeclaration(TokenStream input) throws Exception {
 		this.stmts = new ArrayList<Statement>();
 		this.params = new ArrayList<>();
@@ -40,14 +49,26 @@ public class SubDeclaration extends Statement {
 		input.next();
 	}
 
-	@Override
+	/**
+	 * Executes the SubDeclaration statement
+	 */
 	public void execute() {
 		Interpreter.MEMORY.storeNewSubroutine(this.name, this.stmts, this.params);
 	}
 
-	@Override
+    /**
+     * Converts the current SubDeclaration statement into a String.
+     *   @return the String representation of this statement
+     */
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		String paramStr = "";
+		String stmtStr = "";
+		for (int i = 0; i < this.params.size(); i ++) {
+			paramStr += this.params.get(i) + " ";
+		}
+		for (int i = 0; i < this.stmts.size(); i++) {
+			stmtStr += this.stmts.get(i) + "\n";
+		}
+		return "sub " + this.name + " ( " + paramStr + ")\n" + stmtStr + "end";
 	}
 }

@@ -10,7 +10,7 @@ import token.Token;
 /**
  * Class that defines the memory space for the SILLY interpreter. 
  *   @author Dave Reed, edited by Justin Peck
- *   @version 2/28/16
+ *   @version 3/29/16
  */
 public class MemorySpace {
     private StackSegment stack;
@@ -70,6 +70,15 @@ public class MemorySpace {
     	}    	
     }
     
+    /**
+     * Stores a value on the current scope    
+     * @param token the variable name
+     * @param val the value to be stored under that name
+     */
+    public void storeOnCurrentScope(Token token, DataValue val) {
+    	this.stack.store(token, val);
+    }
+    
     public int getStackIndexForVar(Token token) {
     	int index = scopeIndex;
     	if(this.stack.lookup(token) != null) {
@@ -109,21 +118,20 @@ public class MemorySpace {
      */
     public DataValue lookupVariable(Token token) throws Exception {
     	DataValue val = this.stack.lookup(token);
-    	int searchIndex = this.scopeIndex -1;
-    	while (val == null) {
-    		if(searchIndex < 0) {
-    			break;
-    		}
-    		else {
-    			StackSegment currentStack = scopes.get(searchIndex);
-    			val = currentStack.lookup(token);
-    			searchIndex --;
-    		}    		    		
-    	}
-        if (val == null) {
-            throw new Exception("Undefined variable: " + token.toString());
-        }
-        return val;
+			int searchIndex = this.scopeIndex - 1;
+			while (val == null) {
+				if (searchIndex < 0) {
+					break;
+				} else {
+					StackSegment currentStack = scopes.get(searchIndex);
+					val = currentStack.lookup(token);
+					searchIndex--;
+				}
+			}
+		if (val == null) {
+			throw new Exception("Undefined variable: " + token.toString());
+		}
+		return val;
     }
 
     /**
@@ -144,14 +152,31 @@ public class MemorySpace {
     	return this.heap.lookup(n);
     }
     
+    
+    /**
+     * Stores a new subroutine in the code segment
+     * @param name the name of the subroutine
+     * @param statements the statements of the subroutine
+     * @param parameters the parameter names of the subroutine
+     */
     public void storeNewSubroutine(Token name, List<Statement> statements, List<Token> parameters) {
     	code.storeSubroutine(name, statements, parameters);
     }
     
+    /**
+     * Gets the statements for a given subroutine
+     * @param name the name of the subroutine
+     * @return the statements for the subroutine
+     */
 	public List<Statement> getStmtsForSub(Token name) {
 		return this.code.getStmtsForSub(name);
 	}
 	
+	/**
+	 * Gets the params for a given subroutine
+	 * @param name the name of the subroutine
+	 * @return the params for the subroutine
+	 */
 	public List<Token> getParamsForSub(Token name) {
 		return this.code.getParamsForSub(name);
 	}

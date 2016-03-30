@@ -10,12 +10,21 @@ import expression.Expression;
 import token.Token;
 import token.TokenStream;
 
+/**
+ * Derived class that represents a subroutine call statement in the SILLY language.
+ *   @author Justin Peck
+ *   @version 3/29/16
+ */
 public class SubCall extends Statement {
 	private Token name;
-	private List<DataValue> paramsToBind;
+	private List<Expression> paramsToBind;
 	
+    /**
+     * Reads in a SubCall statement from the specified stream
+     *   @param input the stream to be read from
+     */
 	public SubCall(TokenStream input) throws Exception {
-		this.paramsToBind = new ArrayList<DataValue>();
+		this.paramsToBind = new ArrayList<Expression>();
 		Token call = input.next();
 		this.name = input.next();
 		Token delim = input.next();
@@ -25,25 +34,33 @@ public class SubCall extends Statement {
 		}
 		
 		while (!input.lookAhead().toString().equals(")")) {
-			DataValue param = new Expression(input).evaluate();
+			Expression param = new Expression(input);
 			this.paramsToBind.add(param);
 		}
 		
 		input.next();		
 	}
 
-	@Override
+	/**
+	 * Executes the SubCall statement
+	 */
 	public void execute() throws Exception {
 		List<Token> paramNames = Interpreter.MEMORY.getParamsForSub(this.name);
 		List<Statement> stmts = Interpreter.MEMORY.getStmtsForSub(name);
+		List<DataValue> params = new ArrayList<DataValue>();
+		
 		if (this.paramsToBind.size() != paramNames.size()) {
 			throw new Exception("Incorrect number of params for subroutine: " + name);
 		}
 		
+		for (int i = 0; i < this.paramsToBind.size(); i++) {
+			params.add(this.paramsToBind.get(i).evaluate());
+		}
+		
 		Interpreter.MEMORY.createNewScope();
 		
-		for (int i = 0; i < this.paramsToBind.size(); i++) {
-			Interpreter.MEMORY.storeNewVariable(paramNames.get(i), this.paramsToBind.get(i));
+		for(int i = 0; i < params.size(); i++) {
+			Interpreter.MEMORY.storeOnCurrentScope(paramNames.get(i), params.get(i));
 		}
 		
 		for (int i = 0; i < stmts.size(); i++) {
@@ -53,10 +70,15 @@ public class SubCall extends Statement {
 		Interpreter.MEMORY.destroyScope();
 	}
 
-	@Override
+    /**
+     * Converts the current SubCall statement into a String.
+     *   @return the String representation of this statement
+     */
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		String params = "";
+		for (int i = 0; i < this.paramsToBind.size(); i ++) {
+			params += this.paramsToBind.get(i) + " ";
+		}
+		return "call " + this.name.toString() + " ( " + params + ")";
 	}
-
 }

@@ -3,8 +3,10 @@ package statement;
 import interpreter.Interpreter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import datavalue.BooleanValue;
+import datavalue.DataValue;
 import expression.Expression;
 import token.Token;
 import token.TokenStream;
@@ -12,127 +14,47 @@ import token.TokenStream;
 /**
  * Derived class that represents an if statement in the SILLY language.
  *   @author Justin Peck
- *   @version 2/28/16
+ *   @version 3/29/16
  */
 public class If extends Statement {
-	private ArrayList<Statement> stmts;
-	private ArrayList<String> allLines;
-	private Object condition;
-	private boolean conditionMet = false;
+	private List<List<Statement>> statements;
+	private List<Expression> conditions;
+	private boolean hasElse = false;
 	
     /**
      * Reads in an if statement from the specified stream
      *   @param input the stream to be read from
      */
 	public If(TokenStream input) throws Exception {
+		statements = new ArrayList<List<Statement>>();
+		conditions = new ArrayList<Expression>();
 		Token keyword = input.next();
-		this.allLines = new ArrayList<String>();
-		this.stmts = new ArrayList<Statement>();
-
 		if (!keyword.toString().equals("if")) {
 			throw new Exception("SYNTAX ERROR: Malformed if statement");
 		}
 		
-		this.getNextCondition(input);
-
-		if (conditionIsTrue()) {
-			this.conditionMet = true;
-			this.getStatementsForIf(input);
-			this.continueToEnd(input);
-		} else {
-			while (!this.conditionMet) {
-				while (!input.lookAhead().toString().equals("elif")
-						&& !input.lookAhead().toString().equals("else")
-						&& !input.lookAhead().toString().equals("end")) {
-					Statement stmt = Statement.getStatement(input);
-					this.allLines.add("" + stmt);
-				}
-
-				if (input.lookAhead().toString().equals("elif")) {
-					this.updateTotalLines(input);
-					this.getNextCondition(input);
-					if (conditionIsTrue()) {
-						this.conditionMet = true;
-						this.getStatementsForIf(input);
-						this.continueToEnd(input);
-					}
-				} else if (input.lookAhead().toString().equals("else")) {
-					this.updateTotalLines(input);
-					this.conditionMet = true;
-					this.getStatementsForIf(input);
-					if (!input.lookAhead().toString().equals("end")) {
-						throw new Exception(
-								"SYNTAX ERROR: Malformed if statement");
-					}
-				} else if (input.lookAhead().toString().equals("end")) {
-					break;
-				}
-			}
-		}
-		input.next();
-	}
-
-    /**
-     * Adds current line to the array of all lines
-     *   @param input the stream to read
-     */
-	private void updateTotalLines(TokenStream input) {
-		this.allLines.add(input.next().toString());		
-	}
-
-	 /**
-     * Continues to iterate through lines until 'end' is reached.
-     * Adds each line to array of all lines
-     *   @param input the stream to read
-     */
-	private void continueToEnd(TokenStream input) throws Exception {
-		while (!input.lookAhead().toString().equals("end")) {
-			if(input.lookAhead().toString().equals("elif")) {
-				this.allLines.add(input.nextLine());
+		List<Statement> currentStmts = new ArrayList<Statement>();
+		Expression cond = new Expression(input);
+		conditions.add(cond);
+		
+		while(!input.lookAhead().toString().equals("end")) {
+			if (input.lookAhead().toString().equals("elif")) {
+				input.next();
+				statements.add(currentStmts);
+				currentStmts = new ArrayList<Statement>();				
+				cond = new Expression(input);
+				conditions.add(cond);
 			}
 			else if (input.lookAhead().toString().equals("else")) {
-				this.allLines.add(input.nextLine());
+				this.hasElse = true;
+				input.next();
+				statements.add(currentStmts);
+				currentStmts = new ArrayList<Statement>();
 			}
-			else {
-				Statement stmt = Statement.getStatement(input);
-				this.allLines.add(stmt + "");	
-			}
+			currentStmts.add(Statement.getStatement(input));
 		}
-	}
-
-	 /**
-     * Checks if current condition evaluates to true
-     */
-	private boolean conditionIsTrue() {
-		return this.condition instanceof BooleanValue
-				&& ((BooleanValue) condition).value == true;
-	}
-
-	 /**
-     * Gets condition following if/elif statements.
-     * Adds condition to array of all lines
-     *   @param input the stream to read
-     */
-	private void getNextCondition(TokenStream input) throws Exception {
-		Expression check = new Expression(input);
-		this.allLines.add(check.toString());
-		this.condition = check.evaluate();
-	}
-
-	 /**
-     * Gets all statements for the current if/elif/else block.
-     * Add each statement to array of all lines
-     *   @param input the stream to read
-     */
-	private void getStatementsForIf(TokenStream input) throws Exception {
-		this.stmts = new ArrayList<Statement>();
-		while (!input.lookAhead().toString().equals("end")
-				&& !input.lookAhead().toString().equals("elif")
-				&& !input.lookAhead().toString().equals("else")) {
-			Statement stmt = Statement.getStatement(input);
-			this.stmts.add(stmt);
-			this.allLines.add(stmt + "");
-		}
+		statements.add(currentStmts);
+		input.next();
 	}
 
 	 /**
@@ -140,9 +62,30 @@ public class If extends Statement {
      */
 	public void execute() throws Exception {
 		Interpreter.MEMORY.createNewScope();
-		for (Statement stmt : this.stmts) {
-			stmt.execute();
+		int stmtIndex = -1;
+		for (int i = 0; i < conditions.size(); i++) {
+			DataValue cond = conditions.get(i).evaluate();
+			if (cond.getType() == Token.Type.BOOLEAN) {
+				if (((BooleanValue) cond).value == true) {
+					stmtIndex = i;
+					break;
+				}
+			}
+			else {
+				throw new Exception("If conditions must evaluate to booleans");
+			}
 		}
+		if (stmtIndex != -1) {
+			for(Statement stmt : statements.get(stmtIndex)) {
+				stmt.execute();
+			}		
+		}
+		else if (this.hasElse) {
+			for(Statement stmt : statements.get(0)) {
+				stmt.execute();
+			}
+		}		
+	
 		Interpreter.MEMORY.destroyScope();
 	}
 
@@ -152,16 +95,26 @@ public class If extends Statement {
      */
 	public String toString() {
 		String str = "if ";
-		for (String line : allLines) {
-			if(!line.equals("elif")) {
-				str += line + "\n";	
+		for (int i = 0; i < this.statements.size(); i++) {
+			if (i == 0) {
+				str += this.conditions.get(i) + "\n";
+				for (int j = 0; j < this.statements.get(i).size(); j++) {
+					str += this.statements.get(i).get(j);
+				}
+			}
+			else if (i != 0 && i <= this.conditions.size() - 1) {
+				str += "\nelif " + this.conditions.get(i) + "\n";
+				for (int j = 0; j < this.statements.get(i).size(); j++) {
+					str += this.statements.get(i).get(j);
+				}
 			}
 			else {
-				str += line;
+				str += "\nelse\n";
+				for (int j = 0; j < this.statements.get(i).size(); j++) {
+					str += this.statements.get(i).get(j);
+				}
 			}
 		}
-		str += "end";	
-		return str;
+		return str + "\nend";
 	}
-
 }
