@@ -1,4 +1,27 @@
     AUTHOR           Justin Peck
+    DATE			 3/29/16
+    
+    CREATED          DESCRIPTION
+    --------------   -----------------------------------------------------------
+    SubDeclaration   new class that implements the declaration of a subroutine
+    SubCall			 new class that calls a given subroutine 
+    CodeSegment		 new class that holds subroutine data
+            
+                     
+    MODIFIED         DESCRIPTION
+    --------------   -----------------------------------------------------------
+    Statement        added two cases to getStatement to recognize SubDeclaration and SubCall
+    Token            added "sub" and "call" to the list of keywords
+    MemorySpace      fixed searching for variables only on the local scope, added calls to new CodeSegment
+    If               rewrote so no statements/expressions were evaluated in constructor
+    Repeat           changed MemorySpace calls so that new scopes were created for each loop
+    ---------------------------------------------------------------------------
+    
+    
+    
+    
+    AUTHOR           Justin Peck
+    DATE			 2/28/16
     
     CREATED          DESCRIPTION
     --------------   -----------------------------------------------------------
@@ -15,3 +38,4 @@
     Repeat           added calls to create a new scope before statement execution and destroy it after
     While            added calls to create a new scope before statement execution and destroy it after
                      added check to make sure condition expression evaluates to a boolean
+    ---------------------------------------------------------------------------
