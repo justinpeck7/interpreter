@@ -1,1 +1,1 @@
-#Simple interpreter for SILLY lang
+#Interpreter for a simple made up language#
